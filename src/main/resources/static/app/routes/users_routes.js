@@ -3,7 +3,7 @@ bodyParser = require('body-parser').json();
 // описываем фунцию для обработки post-запроса на url /users
 module.exports = function (app) {
     app.post('/login', bodyParser, function (req, res) {
-        console.log(req.body.login);
+        console.log(req.body);
         const request = require('request');
         const url = 'http://localhost:8080/login';
         var answer = '';
