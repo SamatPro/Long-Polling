@@ -7,6 +7,8 @@ import ru.itis.chat.security.authentication.TokenAuthentication;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
 @Component
 public class TokenAuthenticationFilter implements Filter {

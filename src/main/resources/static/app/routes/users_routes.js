@@ -1,50 +1,73 @@
 bodyParser = require('body-parser').json();
 
-// описываем фунцию для обработки post-запроса на url /users
 module.exports = function (app) {
+    var a_token;
     app.post('/login', bodyParser, function (req, res) {
-        console.log(req.body);
-        const request = require('request');
+        const axios = require('axios');
         const url = 'http://localhost:8080/login';
-        var answer = '';
+        console.log(JSON.stringify(req.body));
 
-        request.post({
-            url: url,
-            data: {
-                loginData: req.body
-                /*login: req.body.login,
-                password: req.body.password*/
+        axios.post(url, req.body).then(
+            function (value) {
+                a_token = value.data.value;
+                console.log(a_token);
+                res.redirect("/chat");
             }
-        }, function (error, response, body) {
-            if (error == null || response.statusCode == 200) {
-                console.log("Response" + response.toString() + body.value);
-            }else {
-                console.log("Error");
-            }
-        });
-        res.redirect("/chat");
-
+        ).catch(function (reason) {
+            console.log(reason);
+            res.redirect("/login");
+        })
     });
     app.get('/login', function (request, response) {
         response.render('login');
-
-        // var lines = data.split('\n');
-/*
-        var result = [];
-        for (var i = 0; i < lines.length; i++) {
-            result.push({'name' : lines[i].split(' ')[0],
-                'surname': lines[i].split(' ')[1]});
-        }*/
-        // response.setHeader('Content-Type', 'application/json');
-        // response.send(JSON.stringify(result));
-
     });
 
     app.get('/chat', function (request, response) {
-        response.render('chat');
-        // вытаскиваю тело в формате JSON
+
+        response.render('chat', {'token': a_token});
         var body = request.body;
         console.log(body);
 
     });
+
+    app.get('/messages', function (request, response) {
+        const axios = require('axios');
+        const url = 'http://localhost:8080/messages';
+        var answer = '';
+        console.log(request);
+
+        axios.get(url, request.body).then(
+            function (value) {
+                console.log(value.data.value);
+
+                var token = value.data.value;
+
+                localStorage.setItem ('token', token);
+                axios.defaults.headers.common['AUTH'] = token;
+                res.redirect("/chat");
+            }
+        ).catch(function (reason) {
+            console.log(reason);
+            res.redirect("/login");
+        })
+    });
+
+    app.post('/messages', bodyParser,function (request, response) {
+        const axios = require('axios');
+        const url = 'http://localhost:8080/messages';
+        console.log(JSON.stringify(request.body));
+        axios.post(url, JSON.stringify(request.body)).then(
+            function (value) {
+                // console.log(value.data.value);
+
+                // res.redirect("/chat");
+            }
+        ).catch(function (reason) {
+            // console.log(reason);
+            // res.redirect("/login");
+        });
+        // console.log(request.body);
+        // console.log(JSON.stringify(request.body));
+    });
+
 };

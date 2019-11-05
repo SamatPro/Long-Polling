@@ -10,7 +10,73 @@
             src="https://code.jquery.com/jquery-3.4.1.min.js"
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
             crossorigin="anonymous"></script>
-    <script src="js/chat.js"></script>
+    <!--<script src="../js/chat.js"></script>-->
+
+    <script>
+        function sendMessage(text) {
+            let body = {
+                text: text,
+                token: localStorage.getItem('token')
+            };
+
+            $.ajax({
+                url: "/messages",
+                method: "POST",
+                headers: {
+                    'AUTH': localStorage.getItem('token')
+                },
+                data: JSON.stringify(body),
+                contentType: "application/json",
+                dataType: "json",
+                success: function () {
+                    $('#message').val('');
+                }
+            });
+
+        }
+        function receiveMessage() {
+            $.ajax({
+                url: "/messages?token=" + localStorage.getItem('token'),
+                method: "GET",
+                dataType: "json",
+                headers: {
+                    'AUTH': localStorage.getItem('token')
+                },
+                contentType: "application/json",
+                success: function (response) {
+                    $('#messages').first().after('<li style="list-style-type: none;"><span style="color: #4d91bf">'+ response[0]['userName']+':  </span> ' + response[0]['text'] + '</li>')
+                    receiveMessage();
+                }
+            })
+        }
+
+        function login() {
+
+            var token = "<%= token %>";
+            localStorage.setItem('token', token);
+            let body = {
+                token: localStorage.getItem('token'),
+                text: '<span style="color: gray"> добавился в беседу</span>'
+            };
+
+            $.ajax({
+                url: "/messages",
+                method: "POST",
+                headers: {
+                    'AUTH': localStorage.getItem('token')
+                },
+                data: JSON.stringify(body),
+                contentType: "application/json",
+                dataType: "json",
+                complete: function () {
+                    receiveMessage();
+                }
+            });
+        }
+
+    </script>
+
+
 </head>
 <body onload="login()">
 
@@ -23,13 +89,29 @@
 
     </ul>
 </div>
-<script type="text/javascript">
-    var token = localStorage.getItem("token");
-    var request = new XMLHttpRequest();
-    var path = "/chat";
-    request.open("GET", path);
-    request.setRequestHeader('AUTH', token);
-    request.send(null);
-</script>
+
+<!--<script type="text/javascript">
+    // window.onload = function () {
+        var token = res.get('token');
+        // var t2 = res.getResponseHeader('token1');
+        localStorage.setItem('AUTH', token);
+        alert(token);
+        // alert(t2);
+
+       /* var token = localStorage.getItem("token");
+        var request = new XMLHttpRequest();
+        var path = "/chat";
+        request.open("GET", path);
+        request.setRequestHeader('AUTH', token);
+        request.send(null);*/
+    // };
+
+</script>-->
+
+
+
+
+
+
 </body>
 </html>

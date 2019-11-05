@@ -26,36 +26,18 @@ public class UserController {
   @Qualifier("customUserDetailsService")
   private UserService service;
 
-  @PostMapping(value = "/login")
-  @PreAuthorize("isAnonymous()")
-  public ResponseEntity<TokenDto> login(/*@RequestParam(name = "login") String login,
-          @RequestParam(name = "password") String password,*/
-          @RequestBody LoginDto loginData
-                            /*@RequestParam(value = "jwt", required = false) Boolean jwtEnabled*/) {
-    /*LoginDto loginData = LoginDto.builder()
-            .login(login)
-            .password(password)
-            .build();*/
-//    loginData.setLogin(login);
-//    loginData.setPassword(password);
-    System.out.println(loginData);
-    TokenDto tokenDto = service.login(loginData);
-    System.out.println(tokenDto);
-    /*if (jwtEnabled != null && jwtEnabled) {
-      modelAndView.addObject("JWT", service.loginAndCreateJwt(loginData.getLogin(), loginData.getPassword()));
-    }*/
-//    modelAndView.addObject("token", tokenDto.getValue());
-
-//    modelAndView.setViewName("login2");
-    return ResponseEntity.ok(tokenDto);
-  }
-
   @GetMapping("/login")
   @PreAuthorize("isAnonymous()")
   public ModelAndView login(){
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("login");
     return modelAndView;
+  }
+
+  @PostMapping(value = "/login")
+  public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginData) {
+    TokenDto tokenDto = service.login(loginData);
+    return ResponseEntity.ok(tokenDto);
   }
 
 }

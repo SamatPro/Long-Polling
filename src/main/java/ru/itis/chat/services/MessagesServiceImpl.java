@@ -8,6 +8,8 @@ import ru.itis.chat.models.Token;
 import ru.itis.chat.repositories.MessagesRepository;
 import ru.itis.chat.repositories.UserRepository;
 
+import java.util.List;
+
 @Service
 public class MessagesServiceImpl implements MessagesService {
 
@@ -28,5 +30,10 @@ public class MessagesServiceImpl implements MessagesService {
             .user(userRepository.findOneByToken(messageDto.getToken()).get())
             .build();
     return message;
+  }
+
+  @Override
+  public List<Message> getAllMessages() {
+    return messagesRepository.findAll();
   }
 }
